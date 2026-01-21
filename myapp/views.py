@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.http import HttpResponse
 from django.core.mail import send_mail
 from datetime import datetime, timedelta
-from .models import Visitors
+from .models import Visitor, VisitorSchedule
 from django.conf import settings
 from django.contrib import messages
 
@@ -13,16 +13,17 @@ def home(request):
 
 def visitor_registration(request):
     success = False  # Flag to show success notification
-    
+
     if request.method == 'POST':
-        #Get Form Data
-        name = request.POST.get('name')
-        email = request.POST.get('Email')
+        # Get form data
+        visitor_name = request.POST.get('visitor_name')
+        visitor_email = request.POST.get('visitor_email')
         appointment_date = request.POST.get('appointment_date')
         appointment_time = request.POST.get('appointment_time')
         document = request.FILES.get('document')
-        designated_attendee = request.PositiveIntegerField.get('designated_Attendee')
-        
+        designated_attendee = request.POST.get('designated_attendee')
+
+        # Ensure unique visitor ID
         last_visitor = Visitor.objects.order_by('-visitor_id').first()
         next_visitor_id = last_visitor.visitor_id + 1 if last_visitor else 101
 
@@ -32,7 +33,7 @@ def visitor_registration(request):
             today = datetime.today().date()
             max_date = today + timedelta(days=10)
 
-            if appointment_date_obj == datatime.strptime(appointment_date, '%Y-%m-%d').date():
+            if appointment_date_obj < today or appointment_date_obj > max_date:
                 messages.error(request, 'Appointment date must be between today and the next 10 days.')
                 return redirect('visitor_registration')
 
@@ -42,7 +43,8 @@ def visitor_registration(request):
                 messages.error(request, 'Appointment time must be between 09:00 AM and 06:00 PM.')
                 return redirect('visitor_registration')
 
-                attendee_email_mapping = {
+            # Send email to the designated attendee
+            attendee_email_mapping = {
                 'Member 1': 'athithyag24@gmail.com',
                 'Member 2': 'athithyag24@gmail.com',
                 'General': 'athithyag24@gmail.com',
@@ -53,16 +55,16 @@ def visitor_registration(request):
                 try:
                     attendee_subject = f'New Visitor Scheduled - {visitor_name}'
                     attendee_message = f"""
-
 Dear Team,
+
 A new visitor Appointment has been scheduled. Below are the details of the visitor's appointment:
 
-Visitor Name: {name}
+Visitor Name: {visitor_name}
 Appointment Date: {appointment_date}
 Appointment Time: {appointment_time}
 Reason: {request.POST.get('reason')}
 
-Please ensure all necessary Arrangements are made to facilitate the visitor's appointment.
+Please ensure all necessary arrangements are made to facilitate the visitor's appointment.
 
 Best Regards,
 Pinesphere Solutions
@@ -76,19 +78,19 @@ Pinesphere Solutions
                     )
                 except Exception as e:
                     print(f"Error sending email to attendee: {e}")
-                    messages.error(request, 'There was an Issue nnotifying the designated attendee.')
+                    messages.error(request, 'There was an issue notifying the designated attendee.')
 
             # Ensure unique visitor ID
-            while Visitor.object.filter(Visitor_id=next_visitor_id).exists():
+            while Visitor.objects.filter(visitor_id=next_visitor_id).exists():
                 next_visitor_id += 1
 
             # Save visitor data to the database
             new_visitor = Visitor(
                 visitor_id=next_visitor_id,
-                name = name,
-                email=email,
-                appointment_date = appointment_date,
-                appointment_time = appointment_time,
+                visitor_name=visitor_name,
+                visitor_email=visitor_email,
+                appointment_date=appointment_date,
+                appointment_time=appointment_time,
                 document=document,
                 category=request.POST.get('category'),
                 reason=request.POST.get('reason'),
@@ -99,7 +101,7 @@ Pinesphere Solutions
             # Email content for visitor
             email_subject = 'Visitor Registration Successful - Pinesphere Solutions'
             email_message = f"""
-Dear {name},
+Dear {visitor_name},
 
 Thank you for registering as a visitor with Pinesphere Solutions. Below are the details of your scheduled appointment:
 
@@ -117,13 +119,13 @@ Best Regards,
 Pinesphere Solutions
 """
 
-            send_mail(
-                email_subject,
-                email_message,
-                settings.EMAIL_HOST_USER,
-                [visitor_email],
-                fail_silently=False,
-            )
+            # send_mail(
+            #     email_subject,
+            #     email_message,
+            #     settings.EMAIL_HOST_USER,
+            #     [visitor_email],
+            #     fail_silently=False,
+            # )
 
             # Create a corresponding VisitorSchedule object
             VisitorSchedule.objects.create(visitor=new_visitor, designated_attendee=designated_attendee)

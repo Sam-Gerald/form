@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Company Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f6f9;
+        }
+
+        /* Layout */
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 220px;
+            background: #0f3d6e;
+            color: white;
+            padding: 20px;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 18px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar ul li {
+            padding: 12px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-bottom: 8px;
+        }
+
+        .sidebar ul li:hover {
+            background: #1e5fa3;
+        }
+
+        /* Main Content */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Topbar */
+        .topbar {
+            height: 60px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .topbar h3 {
+            color: #333;
+        }
+
+        /* Profile */
+        .profile {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+        /* Dropdown */
+        .dropdown {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: rgb(255, 255, 255);
+            width: 150px;
+            border-radius: 5px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 100;
+            
+        }
+
+        .dropdown a {
+            display: block;
+            padding: 10px;
+            text-decoration: none;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .dropdown a:hover {
+            background: #f1f1f1;
+            
+        }
+
+        /* Page Content */
+        .content {
+            padding: 20px;
+        }
+        .footer {
+            margin-top: auto;
+            background: white;
+            text-align: center;
+            padding: 12px;
+            font-size: 14px;
+            color: #555;
+            border-top: 1px solid #ddd;
+        }    
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>COMPANY NAME</h2>
+        <ul>
+            <li>Scheduled Meet</li>
+            <li>Approved Meet</li>
+            <li>Rejected Meet</li>
+            <li>Rescheduled Meet</li>
+            <li>Reports</li>
+        </ul>
+    </div>
+
+    <!-- Main -->
+    <div class="main">
+        <!-- Topbar -->
+        <div class="topbar">
+            <h3>Dashboard</h3>
+
+            <div class="profile" onclick="toggleDropdown()">
+                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Profile">
+                <div class="dropdown" id="dropdownMenu">
+                    <a href="#">My Profile</a>
+                    <a href="#">Logout</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content -->
+    </div>
+</div>
+<footer class="footer">
+    © <span id="currentYear"></span> All rights reserved by <strong>Sam Gerald</strong>
+</footer>
+
+
+<script>
+    function toggleDropdown() {
+        const menu = document.getElementById("dropdownMenu");
+        menu.style.display = menu.style.display === "block" ? "none" : "block";
+    }
+
+    // Close dropdown when clicking outside
+    window.onclick = function(event) {
+        if (!event.target.closest('.profile')) {
+            document.getElementById("dropdownMenu").style.display = "none";
+        }
+    }
+</script>
+
+</body>
+</html>
+
+
